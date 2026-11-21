@@ -243,7 +243,7 @@ function renderGrid() {
 }
 
 function heroArt() {
-  return `<svg viewBox="0 0 300 220" preserveAspectRatio="xMidYMid slice" role="img" aria-label="책장에 꽂힌 책들">
+  return `<svg viewBox="0 0 300 220" preserveAspectRatio="xMidYMax slice" role="img" aria-label="책장에 꽂힌 책들">
     <rect width="300" height="220" fill="#0abbee"/>
     <g stroke="#10131a" stroke-width="2">
       <rect x="18" y="132" width="34" height="70" fill="#ffd400"/>
