@@ -54,6 +54,18 @@ create index if not exists loans_owner_idx on share_library.loans (owner, status
 -- 같은 책은 한 번에 한 사람만 빌릴 수 있다 (여러 명이 신청하는 것은 가능)
 create unique index if not exists loans_one_borrowed on share_library.loans (book_id) where status = 'borrowed';
 
+-- 지금 로그인한 사람 아이디 (요청 토큰의 sub).
+-- 앱 함수는 표 주인 권한으로 도는 security definer 라서 bmr.uid()(= auth.uid()) 를 부르면
+-- auth 스키마 권한이 없어 막힙니다. 요청 토큰에서 바로 읽습니다.
+create or replace function share_library.current_uid()
+returns uuid
+language sql
+stable
+set search_path = ''
+as $$
+  select (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')::uuid
+$$;
+
 -- ── 책 상태(대출 중/신청 있음)를 loans 보고 채우기 ────────────────────────────
 create or replace function share_library.refresh_book(p_book bigint)
 returns void
@@ -88,7 +100,7 @@ language plpgsql
 security definer
 set search_path = ''
 as $$
-declare b record; me uuid := bmr.uid();
+declare b record; me uuid := share_library.current_uid();
 begin
   if me is null then raise exception '로그인이 필요합니다.'; end if;
   select id, owner, share_state into b from share_library.books where id = new.book_id;
@@ -106,7 +118,7 @@ begin
   new.requested_at := now();
   new.decided_at := null;
   new.returned_at := null;
-  if coalesce(new.borrower_name, '') = '' then new.borrower_name := coalesce(bmr.email(), '친구'); end if;
+  if coalesce(new.borrower_name, '') = '' then new.borrower_name := '친구'; end if;
   return new;
 end;
 $$;
@@ -118,7 +130,7 @@ language plpgsql
 security definer
 set search_path = ''
 as $$
-declare me uuid := bmr.uid();
+declare me uuid := share_library.current_uid();
 begin
   if new.book_id <> old.book_id or new.owner <> old.owner or new.borrower <> old.borrower then
     raise exception '책·주인·신청자는 바꿀 수 없습니다.';
@@ -201,7 +213,7 @@ set search_path = ''
 as $$
   select exists (
     select 1 from share_library.loans l
-     where l.book_id = p_book and l.borrower = (select bmr.uid())
+     where l.book_id = p_book and l.borrower = share_library.current_uid()
   )
 $$;
 
