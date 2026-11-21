@@ -190,6 +190,21 @@ create trigger books_touch before update on share_library.books
   for each row execute function share_library.touch_book();
 
 -- ── 행 보안 정책 (RLS) ───────────────────────────────────────────────────────
+-- '내가 빌린 책'인지 확인하는 도우미 — 정책 안에서 loans 표를 직접 읽으면
+-- 손님(anon) 역할에 loans 권한이 없어 books 조회 자체가 막힙니다. security definer 로 감쌉니다.
+create or replace function share_library.is_book_borrower(p_book bigint)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1 from share_library.loans l
+     where l.book_id = p_book and l.borrower = (select bmr.uid())
+  )
+$$;
+
 alter table share_library.books enable row level security;
 alter table share_library.loans enable row level security;
 
@@ -199,10 +214,7 @@ create policy books_read on share_library.books
   using (
     share_state = 'open'
     or owner = (select bmr.uid())
-    or exists (
-      select 1 from share_library.loans l
-       where l.book_id = books.id and l.borrower = (select bmr.uid())
-    )
+    or (select share_library.is_book_borrower(books.id))
   );
 
 drop policy if exists books_insert on share_library.books;

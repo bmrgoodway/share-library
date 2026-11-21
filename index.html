@@ -1,33 +1,72 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-theme="day">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>친구공책 · 준비 중 · BMR APPS</title>
-<meta name="description" content="친구공책 — 준비 중인 페이지입니다 (BMR APPS)">
-<meta name="theme-color" content="#0abbee">
+<title>친구공책 · 바코드로 등록하고 서로 빌려 읽는 책장</title>
+<meta name="description" content="친구공책 — 책 뒷면 바코드(ISBN)를 찍어 내 책장에 올리고, 친구 책을 서로 빌려 읽는 공유 도서관. GOODWAY APPS.">
+<meta name="theme-color" content="#f7f4ec">
+<meta name="color-scheme" content="light dark">
 <meta name="robots" content="noindex">
-<link rel="icon" href="https://wjvqavianqceeyyxonfg.supabase.co/functions/v1/hub-favicon?slug=share-library">
+<link rel="icon" type="image/svg+xml" href="./favicon.svg">
 </head>
 <body>
-<!-- 준비 중 안내 페이지입니다. 앱을 만들면 이 파일(index.html)을 내 앱 화면으로 바꾸세요.
-     개발에 필요한 정보는 BMR APPS 허브의 '내 서비스 정보 → 개발 정보'와 저장소 README.md 에 있습니다. -->
+<a class="skip" href="#main">본문으로 바로 가기</a>
+
 <header class="top">
-  <a class="mark" href="https://bmrgoodway.github.io/" aria-label="BMR APPS 메인 화면"><span>BMR</span><span>APPS</span></a>
+  <a class="mark" href="./" id="logo-home" aria-label="친구공책 처음 화면으로">
+    <svg viewBox="0 0 48 48" role="img" aria-hidden="true" focusable="false">
+      <rect x="1" y="1" width="46" height="46" fill="#ffd400" stroke="#10131a" stroke-width="2"/>
+      <path d="M10 13h12a4 4 0 0 1 4 4v21a4 4 0 0 0-4-4H10z" fill="#fffdf6" stroke="#10131a" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="M38 13H26a4 4 0 0 0-4 4v21a4 4 0 0 1 4-4h12z" fill="#fffdf6" stroke="#10131a" stroke-width="2.2" stroke-linejoin="round"/>
+      <path d="M26 22h8M26 28h8M14 22h6M14 28h6" stroke="#10131a" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="24" cy="10" r="4.2" fill="#0abbee" stroke="#10131a" stroke-width="2"/>
+      <circle cx="36" cy="34" r="3.4" fill="#02c245" stroke="#10131a" stroke-width="2"/>
+      <path d="M27.5 12.5 33 31" stroke="#10131a" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </a>
+  <div class="brand">
+    <b>친구공책</b>
+    <small>GOODWAY APPS · SHARE LIBRARY</small>
+  </div>
+
+  <nav class="nav" aria-label="메뉴">
+    <a class="nav-item" href="#/" data-nav="shelf">모두의 책장</a>
+    <a class="nav-item" href="#/mine" data-nav="mine">내 서재<span class="nav-badge" id="nav-badge" hidden>0</span></a>
+    <button type="button" class="nav-item nav-add" id="btn-add">＋ 책 등록</button>
+    <button type="button" class="icon-btn" id="btn-theme" aria-pressed="false" aria-label="밤 화면으로 바꾸기" title="낮/밤 화면">
+      <span aria-hidden="true" id="theme-icon">☾</span>
+    </button>
+    <button type="button" class="user-btn" id="btn-user" aria-label="로그인">
+      <span class="user-dot" aria-hidden="true">?</span>
+      <span class="user-name" id="user-name">로그인</span>
+    </button>
+  </nav>
 </header>
-<main class="wrap">
-  <section class="hero">
-    <div class="copy">
-      <span class="eyebrow">준비 중</span>
-      <h1 data-app-name>친구공책</h1>
-      <p class="desc" data-app-desc hidden></p>
-      <p class="notice"><b>준비 중인 페이지입니다.</b> 곧 이 주소에서 서비스를 열 예정이에요.</p>
-      <a class="btn" href="https://bmrgoodway.github.io/">BMR APPS 서비스 둘러보기</a>
-    </div>
-    <div class="art" aria-hidden="true"><i class="a"></i><i class="b"></i><i class="c"></i><i class="d"></i><i class="e"></i><i class="f"></i></div>
-  </section>
+
+<main id="main" tabindex="-1">
+  <noscript><p class="wrap notice-strong">친구공책은 브라우저에서 바로 실행됩니다. 자바스크립트를 켜 주세요.</p></noscript>
+  <div id="app" class="app"><div class="boot">책장을 펼치는 중…</div></div>
 </main>
-<footer class="foot">별무리 개발자들이 함께 만들고 나누는 공간 · <a href="https://bmrgoodway.github.io/">BMR APPS</a></footer>
+
+<footer class="foot">
+  <p><b>친구공책</b> — 바코드로 등록하고 서로 빌려 읽는 책장 · <span class="foot-brand">GOODWAY APPS</span></p>
+  <p class="foot-src">책 정보: 카카오 책 검색 · 구글 북스 · 오픈라이브러리. 표지는 도서 정보 제공처에서 받아 옵니다.</p>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<div class="sheet" id="sheet" hidden aria-hidden="true">
+  <div class="sheet-back" data-close="1"></div>
+  <section class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <header class="sheet-head">
+      <h2 id="sheet-title">친구공책</h2>
+      <button type="button" class="icon-btn" id="sheet-close" aria-label="닫기">✕</button>
+    </header>
+    <div class="sheet-body" id="sheet-body"></div>
+  </section>
+</div>
+
 <script type="module" src="/src/main.js"></script>
 </body>
 </html>
