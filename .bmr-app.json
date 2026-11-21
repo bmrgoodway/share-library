@@ -1,0 +1,12 @@
+{
+  "slug": "share-library",
+  "name": "친구공책",
+  "schema": "share_library",
+  "db_role": "share_library_dev",
+  "bucket": "share-library",
+  "function": "share-library-fn",
+  "secret_prefix": "SHARE_LIBRARY_",
+  "supabase_ref": "wjvqavianqceeyyxonfg",
+  "url": "https://bmrgoodway.github.io/share-library/",
+  "template": "bmr-app-templates v2"
+}
